@@ -562,24 +562,6 @@ export function MetadataStep({
   };
 
   // Remove background from image
-  // Convert base64 data URL to blob URL (to save storage space)
-  const dataUrlToBlobUrl = (dataUrl: string): string => {
-    try {
-      const arr = dataUrl.split(",");
-      const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png";
-      const bstr = atob(arr[1]);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
-      const blob = new Blob([u8arr], { type: mime });
-      return URL.createObjectURL(blob);
-    } catch {
-      return dataUrl; // Fallback to original if conversion fails
-    }
-  };
-
   const removeBackground = async (id: string) => {
     const image = images.find((img) => img.id === id);
     if (!image) return;
@@ -604,12 +586,11 @@ export function MetadataStep({
 
       const result = await bgResponse.json();
 
-      // Convert base64 to blob URL to save storage space
-      const blobUrl = dataUrlToBlobUrl(result.data_url);
-
+      // Keep base64 data URL for sticker images - blob URLs don't persist across sessions
+      // and the renderer needs a valid URL to load the image
       updateImageData(id, {
         originalPreview: image.originalPreview || image.preview,
-        preview: blobUrl,
+        preview: result.data_url, // Keep as base64 for persistence
         isRemovingBg: false,
         bgRemoved: true,
       });

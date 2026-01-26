@@ -61,10 +61,16 @@ export function RenderStep({ projectId }: RenderStepProps) {
     if (stored) setCoupleName(stored);
   }, []);
 
-  // Convert blob URL to base64
-  const blobToBase64 = async (blobUrl: string): Promise<string> => {
+  // Convert blob URL to base64, or return base64 as-is
+  const toBase64 = async (url: string): Promise<string> => {
+    // If already a base64 data URL, return as-is
+    if (url.startsWith("data:")) {
+      return url;
+    }
+
+    // Convert blob URL to base64
     try {
-      const response = await fetch(blobUrl);
+      const response = await fetch(url);
       const blob = await response.blob();
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -72,8 +78,9 @@ export function RenderStep({ projectId }: RenderStepProps) {
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
-    } catch {
-      return blobUrl;
+    } catch (err) {
+      console.error("Failed to convert URL to base64:", url, err);
+      throw new Error("Failed to load image - please try re-uploading");
     }
   };
 
@@ -105,10 +112,10 @@ export function RenderStep({ projectId }: RenderStepProps) {
       // Simulate progress while converting images
       setProgress(10);
 
-      // Convert blob URLs to base64
+      // Convert blob URLs to base64 (base64 data URLs pass through as-is)
       const processedImages = await Promise.all(
         images.map(async (img: any) => {
-          const base64Url = await blobToBase64(img.preview);
+          const base64Url = await toBase64(img.preview);
           return {
             url: base64Url,
             caption: img.enhancedNote || img.note || "A beautiful memory",
