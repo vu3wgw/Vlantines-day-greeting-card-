@@ -80,8 +80,9 @@ export const ValentineVideo: React.FC<ValentineVideoProps> = ({
   const introTransition: TransitionType = "crossfade";
   const outroTransition: TransitionType = "crossfade";
 
-  // Calculate when images start (after intro)
-  const imagesStartFrame = introDurationFrames - transitionDurationFrames; // Overlap intro fade with first image
+  // Calculate when images start - overlap more with intro so first image is visible longer
+  // Start images 2 transition periods before intro ends (more overlap = more visible time for first image)
+  const imagesStartFrame = introDurationFrames - transitionDurationFrames * 2;
 
   // Calculate when the outro starts
   const outroStart =

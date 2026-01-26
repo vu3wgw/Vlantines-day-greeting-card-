@@ -31,8 +31,8 @@ export const VIDEO_CONFIG = {
 export function calculateDuration(imageCount: number): number {
   const { introDurationFrames, imageDurationFrames, transitionDurationFrames, outroDurationFrames } = VIDEO_CONFIG;
 
-  // Calculate where images start (overlapping with intro)
-  const imagesStartFrame = introDurationFrames - transitionDurationFrames;
+  // Calculate where images start (overlapping more with intro for better first image visibility)
+  const imagesStartFrame = introDurationFrames - transitionDurationFrames * 2;
 
   // Calculate where outro starts (overlapping with last image)
   const outroStart =
