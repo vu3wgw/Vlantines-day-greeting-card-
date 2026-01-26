@@ -22,7 +22,9 @@
     "dev:native": "bun run --filter native dev",
     "dev:web": "bun run --filter web dev",
     "dev:server": "bun run --filter @my-better-t-app/backend dev",
-    "dev:setup": "bun run --filter @my-better-t-app/backend dev:setup"
+    "dev:setup": "bun run --filter @my-better-t-app/backend dev:setup",
+    "dev:render": "bun run --filter render-server dev",
+    "studio": "bun run --filter @my-better-t-app/video studio"
   },
   "dependencies": {
     "@my-better-t-app/env": "workspace:*",

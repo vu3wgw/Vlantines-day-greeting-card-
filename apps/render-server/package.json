@@ -1,0 +1,28 @@
+{
+  "name": "render-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@my-better-t-app/video": "workspace:*",
+    "@remotion/bundler": "^4.0.242",
+    "@remotion/renderer": "^4.0.242",
+    "bullmq": "^5.34.8",
+    "convex": "catalog:",
+    "dotenv": "catalog:",
+    "express": "^5.0.1",
+    "ioredis": "^5.4.2",
+    "remotion": "^4.0.242",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@my-better-t-app/config": "workspace:*",
+    "@types/express": "^5.0.0",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "coupleName": "Your Names Here",
+  "seed": 42,
+  "images": [
+    {
+      "url": "PASTE_IMAGE_1_URL_HERE",
+      "caption": "Your first memory caption here",
+      "date": "Date 1"
+    },
+    {
+      "url": "PASTE_IMAGE_2_URL_HERE",
+      "caption": "Your second memory caption here",
+      "date": "Date 2"
+    },
+    {
+      "url": "PASTE_IMAGE_3_URL_HERE",
+      "caption": "Your third memory caption here",
+      "date": "Date 3"
+    },
+    {
+      "url": "PASTE_IMAGE_4_URL_HERE",
+      "caption": "Your fourth memory caption here",
+      "date": "Date 4"
+    },
+    {
+      "url": "PASTE_IMAGE_5_URL_HERE",
+      "caption": "Your fifth memory caption here",
+      "date": "Date 5"
+    }
+  ]
+}

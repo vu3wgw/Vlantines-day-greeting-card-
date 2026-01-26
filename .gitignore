@@ -48,3 +48,25 @@ coverage
 .cache
 tmp
 temp
+
+# Next.js
+.next
+
+# Test videos
+*.mp4
+
+# Windows
+nul
+Thumbs.db
+
+# Remotion
+out/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+env/
+.venv/
