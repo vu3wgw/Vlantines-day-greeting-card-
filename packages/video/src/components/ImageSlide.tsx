@@ -13,6 +13,8 @@ interface ImageSlideProps {
   imageUrl: string;
   caption: string;
   date?: string;
+  daysSince?: number;
+  context?: string;
   index?: number;
   seed?: number;
 }
@@ -67,6 +69,8 @@ export const ImageSlide: React.FC<ImageSlideProps> = ({
   imageUrl,
   caption,
   date,
+  daysSince,
+  context,
   index = 0,
   seed = 0,
 }) => {
@@ -228,6 +232,39 @@ export const ImageSlide: React.FC<ImageSlideProps> = ({
           ...captionStyle,
         }}
       >
+        {/* Days Since overlay (if provided) */}
+        {daysSince !== undefined && context && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: 20,
+              opacity: interpolate(frame, [40, 65], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              }),
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "'Inter', 'Helvetica', sans-serif",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "white",
+                backgroundColor: "rgba(255,50,100,0.35)",
+                backdropFilter: "blur(12px)",
+                padding: "12px 28px",
+                borderRadius: 25,
+                border: "2px solid rgba(255,150,170,0.4)",
+                textShadow: "1px 1px 6px rgba(0,0,0,0.6)",
+                textAlign: "center",
+              }}
+            >
+              It's been <strong>{daysSince}</strong> days since {context.toLowerCase()}
+            </div>
+          </div>
+        )}
+
         {/* Date badge (if provided) */}
         {date && (
           <div

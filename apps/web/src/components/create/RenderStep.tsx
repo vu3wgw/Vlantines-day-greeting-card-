@@ -105,8 +105,8 @@ export function RenderStep({ projectId }: RenderStepProps) {
         throw new Error("Image data was corrupted (storage limit exceeded). Please try with fewer or smaller images.");
       }
 
-      if (!Array.isArray(images) || images.length < 5) {
-        throw new Error("At least 5 images required");
+      if (!Array.isArray(images) || images.length < 2) {
+        throw new Error("At least 2 images required");
       }
 
       // Simulate progress while converting images
@@ -116,10 +116,21 @@ export function RenderStep({ projectId }: RenderStepProps) {
       const processedImages = await Promise.all(
         images.map(async (img: any) => {
           const base64Url = await toBase64(img.preview);
+          // Also get stickerUrl if available (background-removed version)
+          let stickerBase64 = undefined;
+          if (img.stickerUrl) {
+            try {
+              stickerBase64 = await toBase64(img.stickerUrl);
+            } catch {
+              // Sticker URL failed, continue without it
+            }
+          }
           return {
             url: base64Url,
             caption: img.enhancedNote || img.note || "A beautiful memory",
             date: img.date || undefined,
+            stickerUrl: stickerBase64,
+            isFavorite: img.isFavorite || false,
           };
         })
       );
@@ -134,7 +145,7 @@ export function RenderStep({ projectId }: RenderStepProps) {
         setProgress((prev) => Math.min(prev + 5, 90));
       }, 3000);
 
-      // Call render API
+      // Call render API with premium options
       const response = await fetch("/api/render", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,6 +153,11 @@ export function RenderStep({ projectId }: RenderStepProps) {
           images: processedImages,
           coupleName: name,
           seed: Date.now(),
+          // Premium animation options
+          usePremium: true,
+          colorScheme: "warm",
+          quality: "balanced",
+          transitionStyle: "smooth",
         }),
       });
 
@@ -244,18 +260,25 @@ export function RenderStep({ projectId }: RenderStepProps) {
       {effectiveStatus === "ready" && (
         <div className="text-center py-12 bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl border border-pink-100">
           <Heart className="h-20 w-20 mx-auto text-pink-500 fill-pink-400 mb-4" />
-          <h3 className="text-xl font-medium mb-2 text-gray-800">Ready to Create Your Video</h3>
-          <p className="text-gray-500 mb-6 max-w-md mx-auto">
+          <h3 className="text-xl font-medium mb-2 text-gray-800">Ready to Create Your Premium Video</h3>
+          <p className="text-gray-500 mb-4 max-w-md mx-auto">
             Your photos and captions are ready. Click below to render your
-            personalized Valentine's video. This usually takes 1-2 minutes.
+            personalized Valentine's video with premium animations.
           </p>
+          <div className="flex flex-wrap justify-center gap-2 mb-6 text-xs">
+            <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded-full">Spring Physics</span>
+            <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded-full">Kinetic Typography</span>
+            <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded-full">Sticker Collages</span>
+            <span className="px-2 py-1 bg-pink-100 text-pink-700 rounded-full">Premium Transitions</span>
+          </div>
+          <p className="text-gray-400 text-sm mb-6">This usually takes 2-3 minutes.</p>
           <Button
             onClick={useLocalRender ? handleLocalRender : handleConvexRender}
             size="lg"
             className="px-8 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 shadow-lg shadow-pink-300/30"
           >
             <Video className="h-4 w-4 mr-2" />
-            Create Video
+            Create Premium Video
           </Button>
         </div>
       )}

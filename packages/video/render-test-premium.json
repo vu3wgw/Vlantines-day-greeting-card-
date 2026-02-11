@@ -1,0 +1,41 @@
+{
+  "couple": {
+    "name1": "Emma",
+    "name2": "James",
+    "startDate": "2022-02-14"
+  },
+  "images": [
+    {
+      "url": "https://picsum.photos/seed/couple1/1080/1920",
+      "caption": "The day we first met, everything changed",
+      "date": "February 2022",
+      "isFavorite": true
+    },
+    {
+      "url": "https://picsum.photos/seed/couple2/1080/1920",
+      "caption": "Our first adventure together",
+      "date": "March 2022"
+    },
+    {
+      "url": "https://picsum.photos/seed/couple3/1080/1920",
+      "caption": "Dancing under the stars",
+      "date": "Summer 2022",
+      "isFavorite": true
+    },
+    {
+      "url": "https://picsum.photos/seed/couple4/1080/1920",
+      "caption": "Building memories one smile at a time",
+      "date": "Fall 2022"
+    },
+    {
+      "url": "https://picsum.photos/seed/couple5/1080/1920",
+      "caption": "Forever grateful for every moment with you",
+      "date": "2023",
+      "isFavorite": true
+    }
+  ],
+  "colorScheme": "warm",
+  "quality": "balanced",
+  "transitionStyle": "smooth",
+  "seed": "test-premium-123"
+}

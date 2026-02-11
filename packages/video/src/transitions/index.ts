@@ -21,6 +21,9 @@ export {
   WipeVertical,
 };
 
+// Export premium transitions
+export * from "./premium";
+
 // Map transition types to components
 export const TransitionComponents: Record<
   TransitionType,

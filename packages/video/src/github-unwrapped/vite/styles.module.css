@@ -1,0 +1,122 @@
+.container {
+  width: 100vw;
+  height: 140vh;
+  height: 140svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  @media only screen and (min-width: 40em) {
+    height: 100vh;
+    height: 100svh;
+    justify-content: center;
+  }
+}
+
+.octocat {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  height: 196px;
+  bottom: 86px;
+  @media only screen and (min-width: 40em) {
+    height: 196px;
+    bottom: 130px;
+    transform: translateX(18px);
+  }
+  @media only screen and (min-width: 40em) and (max-height: 64em) {
+    height: 146px;
+    bottom: 75px;
+    transform: translateX(12px);
+  }
+}
+
+.gradientText2 {
+  background: linear-gradient(270.02deg, #d9d9ff 3.63%, #fff 99.87%);
+  font-size: 24px;
+  margin: 0;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.homeForeground {
+  width: 1080px;
+  transform: translateY(16px);
+  position: absolute;
+  @media only screen and (min-width: 40em) {
+    transform: translateY(48px);
+    width: 1800px;
+  }
+  @media only screen and (min-width: 40em) and (max-height: 64em) {
+    transform: translateY(48px);
+    width: 1200px;
+  }
+}
+
+.gradientText {
+  background: linear-gradient(270.02deg, #645278 20.63%, #82b6c6 99.87%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.aboutTitle {
+  color: #fff;
+
+  font-family: Mona Sans;
+  font-size: 46px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.aboutDescription {
+  color: #ebeaee;
+
+  font-family: Mona Sans;
+  font-size: 16px;
+  font-style: normal;
+  line-height: 24px; /* 150% */
+}
+
+.aboutButton {
+  width: 172px;
+  height: 45px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid #4b4d5a;
+  display: block;
+  text-align: center;
+
+  background: #363745;
+
+  color: #fff;
+
+  font-family: Mona Sans;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.aboutLink {
+  color: #507eff;
+  border-bottom: 1px solid #507eff;
+}
+
+@keyframes grow2 {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 95%;
+  }
+}
+
+.animateProgress {
+  width: 95%;
+  animation: grow2 4s linear;
+}

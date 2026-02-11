@@ -35,5 +35,20 @@
     "@my-better-t-app/config": "workspace:*",
     "typescript": "catalog:"
   },
+  "resolutions": {
+    "remotion": "4.0.410",
+    "@remotion/bundler": "4.0.410",
+    "@remotion/cli": "4.0.410",
+    "@remotion/noise": "4.0.410",
+    "@remotion/paths": "4.0.410",
+    "@remotion/player": "4.0.410",
+    "@remotion/renderer": "4.0.410",
+    "@remotion/shapes": "4.0.410",
+    "@remotion/transitions": "4.0.410",
+    "@remotion/media-utils": "4.0.410",
+    "@remotion/studio-server": "4.0.410",
+    "@remotion/studio-shared": "4.0.410",
+    "@remotion/zod-types": "4.0.410"
+  },
   "packageManager": "bun@1.2.21"
 }

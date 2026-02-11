@@ -2,10 +2,10 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Player } from "@remotion/player";
-import { ValentineVideo, VIDEO_CONFIG, calculateDuration } from "@my-better-t-app/video";
+import { ValentineStory, VIDEO_CONFIG } from "@my-better-t-app/video";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Loader2, Play, Info, Heart } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Play, Info, Heart, Sparkles } from "lucide-react";
 
 // Try to import Convex - will be undefined in mock mode
 let useQuery: any, api: any;
@@ -23,6 +23,7 @@ interface ImageData {
   note: string;
   date: string;
   enhancedNote?: string;
+  stickerUrl?: string;
 }
 
 interface PreviewStepProps {
@@ -66,6 +67,19 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
     }
   }, [project]);
 
+  // Parse couple name into name1 & name2
+  const parseCoupleNames = (name: string): { name1: string; name2: string } => {
+    const cleanName = name || "Our Love Story";
+    const separators = [" & ", " and ", " + "];
+    for (const sep of separators) {
+      if (cleanName.includes(sep)) {
+        const [name1, name2] = cleanName.split(sep).map((n) => n.trim());
+        return { name1: name1 || "You", name2: name2 || "Me" };
+      }
+    }
+    return { name1: cleanName, name2: "" };
+  };
+
   const videoProps = useMemo(() => {
     if (project?.images) {
       // Convex mode
@@ -75,11 +89,21 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
           url: img.url || "",
           caption: img.enhancedCaption || img.originalNote,
           date: img.imageDate,
+          stickerUrl: img.stickerUrl,
         }));
 
+      const couple = parseCoupleNames(project.coupleName);
+
       return {
+        couple: {
+          name1: couple.name1,
+          name2: couple.name2,
+        },
         images,
-        coupleName: project.coupleName,
+        colorScheme: "warm" as const,
+        quality: "balanced" as const,
+        transitionStyle: "smooth" as const,
+        seed: "preview",
       };
     } else if (localImages.length > 0) {
       // Mock mode - use sessionStorage data
@@ -87,11 +111,21 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
         url: img.preview,
         caption: img.enhancedNote || img.note,
         date: img.date,
+        stickerUrl: img.stickerUrl,
       }));
 
+      const couple = parseCoupleNames(coupleName || "Our Love Story");
+
       return {
+        couple: {
+          name1: couple.name1,
+          name2: couple.name2,
+        },
         images,
-        coupleName: coupleName || "Our Love Story",
+        colorScheme: "warm" as const,
+        quality: "balanced" as const,
+        transitionStyle: "smooth" as const,
+        seed: "preview",
       };
     }
     return null;
@@ -118,8 +152,9 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
     );
   }
 
-  const durationInFrames = calculateDuration(videoProps.images.length);
-  const durationSeconds = Math.round(durationInFrames / VIDEO_CONFIG.fps);
+  // Calculate duration: 60 seconds for premium composition
+  const durationInFrames = 60 * VIDEO_CONFIG.fps;
+  const durationSeconds = 60;
 
   return (
     <Card className="p-6">
@@ -146,11 +181,20 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
         <span>1080x1920 (9:16)</span>
       </div>
 
+      {/* Premium badge */}
+      <div className="flex items-center gap-2 mb-4 text-sm">
+        <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full text-xs font-medium">
+          <Sparkles className="h-3 w-3" />
+          Premium Animation
+        </span>
+        <span className="text-gray-400">Spring physics • Kinetic typography • Sticker collages</span>
+      </div>
+
       {/* Remotion Player */}
       <div className="flex justify-center bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden p-4">
         <div className="w-full max-w-[400px] aspect-[9/16] rounded-xl overflow-hidden shadow-2xl">
           <Player
-            component={ValentineVideo}
+            component={ValentineStory}
             inputProps={videoProps}
             durationInFrames={durationInFrames}
             fps={VIDEO_CONFIG.fps}

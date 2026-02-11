@@ -1,11 +1,30 @@
 import React from "react";
-import { Composition } from "remotion";
+import { Composition, AbsoluteFill, staticFile } from "remotion";
 import { ValentineVideo } from "./compositions/ValentineVideo";
+import { ValentineStory, PremiumValentineStory } from "./story/ValentineStory";
+import { CupidJourney, CupidJourneySchema, cupidJourneyDefaultProps } from "./compositions/CupidJourney";
+import { ValentineUnwrapped, ValentineUnwrappedSchema, valentineUnwrappedDefaultProps } from "./unwrapped/ValentineUnwrapped";
+import { UnwrappedDemo, unwrappedDemoDefaultProps } from "./github-unwrapped/UnwrappedDemo";
+import { compositionSchema } from "./github-unwrapped/config";
+import { HybridValentineVideo } from "./compositions/HybridValentineVideo";
+import { ValentineFrameOverlay } from "./compositions/ValentineFrameOverlay";
+// import { calculateDuration as unwrappedCalculateDuration } from "./github-unwrapped/Main";
 import {
   VIDEO_CONFIG,
   ValentineVideoPropsSchema,
+  PremiumVideoPropsSchema,
+  HybridVideoPropsSchema,
   calculateDuration,
 } from "./types";
+
+// Simple test component
+const TestComponent: React.FC = () => {
+  return (
+    <AbsoluteFill style={{ backgroundColor: "red", justifyContent: "center", alignItems: "center" }}>
+      <h1 style={{ color: "white", fontSize: 60 }}>STUDIO WORKS!</h1>
+    </AbsoluteFill>
+  );
+};
 
 // Default props for Remotion Studio preview
 const defaultProps = {
@@ -43,61 +62,63 @@ const defaultProps = {
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      {/* Main composition */}
+      {/* TEST COMPOSITION - If you see this, Studio works! */}
       <Composition
-        id="ValentineVideo"
-        component={ValentineVideo}
-        durationInFrames={calculateDuration(defaultProps.images.length)}
-        fps={VIDEO_CONFIG.fps}
-        width={VIDEO_CONFIG.width}
-        height={VIDEO_CONFIG.height}
-        schema={ValentineVideoPropsSchema}
-        defaultProps={defaultProps}
+        id="TEST"
+        component={TestComponent}
+        durationInFrames={90}
+        fps={30}
+        width={1080}
+        height={1080}
       />
 
-      {/* Preview with different seed - shows variation */}
+      {/* ============ GITHUB UNWRAPPED ORIGINAL ============ */}
+      {/* The actual GitHub Unwrapped 2023 animation - ONLY THIS FOR NOW */}
       <Composition
-        id="ValentineVideoAlt"
-        component={ValentineVideo}
-        durationInFrames={calculateDuration(defaultProps.images.length)}
-        fps={VIDEO_CONFIG.fps}
-        width={VIDEO_CONFIG.width}
-        height={VIDEO_CONFIG.height}
-        schema={ValentineVideoPropsSchema}
+        id="GitHubUnwrapped"
+        component={UnwrappedDemo}
+        durationInFrames={1800} // Fixed duration for now
+        fps={30}
+        width={1080}
+        height={1080}
+        schema={compositionSchema}
+        defaultProps={unwrappedDemoDefaultProps}
+      />
+
+      {/* ============ HYBRID VALENTINE VIDEO ============ */}
+      {/* Real video with green screen + Remotion overlays */}
+      <Composition
+        id="HybridValentineVideo"
+        component={HybridValentineVideo}
+        durationInFrames={1517} // 63.2s × 24fps (matches shot1 v1.mp4)
+        fps={24}
+        width={416}
+        height={752}
+        schema={HybridVideoPropsSchema}
         defaultProps={{
-          ...defaultProps,
-          seed: 99999, // Different seed = different animations
+          compositedVideoUrl: staticFile("shot1_v1.mp4"), // Placeholder for studio preview
+          images: defaultProps.images.slice(0, 3), // Use first 3 images
+          coupleName: defaultProps.coupleName,
+          overlayStyle: "romantic",
+          seed: 12345,
         }}
       />
 
-      {/* Preview with more images */}
+      {/* ============ VALENTINE FRAME OVERLAY ============ */}
+      {/* Overlays couple images onto moving photo frames in Valentine video */}
       <Composition
-        id="ValentineVideoLong"
-        component={ValentineVideo}
-        durationInFrames={calculateDuration(8)}
-        fps={VIDEO_CONFIG.fps}
-        width={VIDEO_CONFIG.width}
-        height={VIDEO_CONFIG.height}
-        schema={ValentineVideoPropsSchema}
+        id="ValentineFrameOverlay"
+        component={ValentineFrameOverlay}
+        durationInFrames={1692} // 70.5s × 24fps (matches valintain 2.mp4)
+        fps={24}
+        width={416}
+        height={752}
         defaultProps={{
-          ...defaultProps,
-          seed: 54321,
+          videoSrc: staticFile("valentine-video.mp4"),
           images: [
-            ...defaultProps.images,
-            {
-              url: "https://images.unsplash.com/photo-1501901609772-df0848060b33?w=800",
-              caption: "Adventures await them. Emma and James set off to explore the world together.",
-              date: "Summer 2023",
-            },
-            {
-              url: "https://images.unsplash.com/photo-1522098543979-ffc7f79a56c4?w=800",
-              caption: "Through every season, their love only grew stronger. Hand in hand, heart to heart.",
-            },
-            {
-              url: "https://images.unsplash.com/photo-1543255006-d6395b6f1171?w=800",
-              caption: "Forever grateful for the day they met. This is just the beginning of their forever.",
-              date: "Always",
-            },
+            staticFile("couple1.jpg"),
+            staticFile("couple2.jpg"),
+            staticFile("couple3.jpg"),
           ],
         }}
       />

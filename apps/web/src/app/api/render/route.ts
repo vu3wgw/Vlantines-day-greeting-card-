@@ -9,11 +9,20 @@ export const maxDuration = 300; // 5 minutes timeout
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { images, coupleName, seed } = body;
+    const {
+      images,
+      coupleName,
+      seed,
+      // Premium options
+      usePremium = true,
+      colorScheme = "warm",
+      quality = "balanced",
+      transitionStyle = "smooth",
+    } = body;
 
-    if (!images || images.length < 5) {
+    if (!images || images.length < 2) {
       return NextResponse.json(
-        { error: "At least 5 images required" },
+        { error: "At least 2 images required" },
         { status: 400 }
       );
     }
@@ -25,18 +34,52 @@ export async function POST(request: NextRequest) {
     // Keep base64 data URLs - Remotion can handle them directly
     // (file:// URLs don't work due to Chrome security restrictions)
     const processedImages = images.map((img: any) => ({
-      ...img,
-      // Keep the base64 data URL as-is
       url: img.url,
+      caption: img.caption || "",
+      date: img.date || undefined,
+      stickerUrl: img.stickerUrl || undefined,
+      isFavorite: img.isFavorite || false,
     }));
 
-    // Create props file
-    const propsPath = path.join(tempDir, "props.json");
-    const props = {
-      images: processedImages,
-      coupleName: coupleName || "Our Love Story",
-      seed: seed || Date.now(),
+    // Parse couple name into name1 & name2
+    const parseCoupleNames = (name: string): { name1: string; name2: string } => {
+      const cleanName = name || "Our Love Story";
+      // Try to split by common separators
+      const separators = [" & ", " and ", " + ", " ❤️ ", " ♥ "];
+      for (const sep of separators) {
+        if (cleanName.includes(sep)) {
+          const [name1, name2] = cleanName.split(sep).map((n) => n.trim());
+          return { name1: name1 || "You", name2: name2 || "Me" };
+        }
+      }
+      // If no separator found, use as single name
+      return { name1: cleanName, name2: "" };
     };
+
+    const couple = parseCoupleNames(coupleName);
+
+    // Create props file - use premium composition props structure
+    const propsPath = path.join(tempDir, "props.json");
+    const props = usePremium
+      ? {
+          // Premium ValentineStory props
+          couple: {
+            name1: couple.name1,
+            name2: couple.name2,
+            startDate: undefined,
+          },
+          images: processedImages,
+          colorScheme,
+          quality,
+          transitionStyle,
+          seed: seed?.toString() || `valentine-${Date.now()}`,
+        }
+      : {
+          // Legacy ValentineVideo props
+          images: processedImages,
+          coupleName: coupleName || "Our Love Story",
+          seed: seed || Date.now(),
+        };
     await fs.writeFile(propsPath, JSON.stringify(props, null, 2));
 
     // Output path
@@ -51,14 +94,15 @@ export async function POST(request: NextRequest) {
       "video"
     );
 
-    // Run Remotion render
+    // Run Remotion render - use premium composition if enabled
+    const compositionId = usePremium ? "ValentineStory" : "ValentineVideo";
     const renderResult = await new Promise<{ success: boolean; error?: string }>(
       (resolve) => {
         const args = [
           "run",
           "remotion",
           "render",
-          "ValentineVideo",
+          compositionId,
           `--props=${propsPath}`,
           `--output=${outputPath}`,
         ];

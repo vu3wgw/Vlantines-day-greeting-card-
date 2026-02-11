@@ -137,6 +137,8 @@ export const ValentineVideo: React.FC<ValentineVideoProps> = ({
                 imageUrl={image.url}
                 caption={image.caption}
                 date={image.date}
+                daysSince={image.daysSince}
+                context={image.context}
                 index={index}
                 seed={seed}
               />

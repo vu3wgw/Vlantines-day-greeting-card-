@@ -10,14 +10,14 @@
   },
   "dependencies": {
     "@my-better-t-app/video": "workspace:*",
-    "@remotion/bundler": "^4.0.242",
-    "@remotion/renderer": "^4.0.242",
+    "@remotion/bundler": "4.0.410",
+    "@remotion/renderer": "4.0.410",
     "bullmq": "^5.34.8",
     "convex": "catalog:",
     "dotenv": "catalog:",
     "express": "^5.0.1",
     "ioredis": "^5.4.2",
-    "remotion": "^4.0.242",
+    "remotion": "4.0.410",
     "zod": "catalog:"
   },
   "devDependencies": {

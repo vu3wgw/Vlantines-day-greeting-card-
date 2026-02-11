@@ -12,14 +12,23 @@
     "studio": "remotion studio",
     "build": "tsc",
     "render": "remotion render",
-    "render:custom": "remotion render ValentineVideo --props=./render-input.json --output=./out/valentine-custom.mp4"
+    "render:custom": "remotion render ValentineVideo --props=./render-input.json --output=./out/valentine-custom.mp4",
+    "render:premium": "remotion render ValentineStory --props=./render-test-premium.json --output=./out/valentine-premium-test.mp4",
+    "test:render": "bun run render-test-premium.ts"
   },
   "dependencies": {
-    "remotion": "^4.0.242",
-    "@remotion/player": "^4.0.242",
-    "@remotion/cli": "^4.0.242",
+    "@remotion/bundler": "4.0.410",
+    "@remotion/cli": "4.0.410",
+    "@remotion/noise": "4.0.410",
+    "@remotion/paths": "4.0.410",
+    "@remotion/player": "4.0.410",
+    "@remotion/renderer": "4.0.410",
+    "@remotion/shapes": "4.0.410",
+    "@remotion/transitions": "4.0.410",
+    "polished": "^4.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "remotion": "4.0.410",
     "zod": "catalog:"
   },
   "devDependencies": {

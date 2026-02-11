@@ -49,6 +49,7 @@ interface ImageData {
   isRemovingBg?: boolean;
   bgRemoved?: boolean;
   originalPreview?: string;
+  stickerUrl?: string; // Background-removed version for premium animations
   isEditingEnhanced?: boolean;
   editedEnhancedNote?: string;
 }
@@ -355,6 +356,7 @@ export function MetadataStep({
 }: MetadataStepProps) {
   const [images, setImages] = useState<ImageData[]>([]);
   const [coupleName, setCoupleName] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isEnhancingAll, setIsEnhancingAll] = useState(false);
 
@@ -397,6 +399,12 @@ export function MetadataStep({
         }
       }
     }
+
+    // Load couple name and start date from sessionStorage
+    const storedCoupleName = sessionStorage.getItem("coupleName");
+    const storedStartDate = sessionStorage.getItem("startDate");
+    if (storedCoupleName) setCoupleName(storedCoupleName);
+    if (storedStartDate) setStartDate(storedStartDate);
   }, [project]);
 
   const updateImageData = (id: string, updates: Partial<ImageData>) => {
@@ -588,9 +596,11 @@ export function MetadataStep({
 
       // Keep base64 data URL for sticker images - blob URLs don't persist across sessions
       // and the renderer needs a valid URL to load the image
+      // Store stickerUrl separately for premium animations
       updateImageData(id, {
         originalPreview: image.originalPreview || image.preview,
-        preview: result.data_url, // Keep as base64 for persistence
+        preview: image.originalPreview || image.preview, // Keep original as main preview
+        stickerUrl: result.data_url, // Store background-removed as sticker
         isRemovingBg: false,
         bgRemoved: true,
       });
@@ -605,11 +615,18 @@ export function MetadataStep({
     if (!image?.originalPreview) return;
     updateImageData(id, {
       preview: image.originalPreview,
+      stickerUrl: undefined,
       bgRemoved: false,
     });
   };
 
   const handleContinue = async () => {
+    // Validate required fields
+    if (!startDate) {
+      alert("Please enter when you met before continuing");
+      return;
+    }
+
     setIsSaving(true);
 
     try {
@@ -629,6 +646,9 @@ export function MetadataStep({
 
       sessionStorage.setItem("uploadedImages", JSON.stringify(images));
       sessionStorage.setItem("coupleName", coupleName.trim() || "Our Love Story");
+      if (startDate) {
+        sessionStorage.setItem("startDate", startDate);
+      }
       await new Promise((r) => setTimeout(r, 500));
       onComplete();
     } catch (error) {
@@ -663,6 +683,32 @@ export function MetadataStep({
           onChange={(e) => setCoupleName(e.target.value)}
           className="max-w-sm bg-white border-pink-200 focus:border-pink-400 focus:ring-pink-400"
         />
+      </div>
+
+      {/* Start Date */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-2">
+          <Calendar className="h-5 w-5 text-pink-500" />
+          <label className="text-sm font-semibold text-gray-700">When Did You Meet?</label>
+          <span className="text-xs text-red-500">*Required</span>
+        </div>
+        <Input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="max-w-sm bg-white border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+          required
+        />
+        {startDate && (
+          <p className="text-xs text-gray-500 mt-1">
+            {(() => {
+              const start = new Date(startDate);
+              const today = new Date();
+              const days = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+              return `${days} ${days === 1 ? "day" : "days"} together`;
+            })()}
+          </p>
+        )}
       </div>
 
       {/* Enhance All Button */}

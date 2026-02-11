@@ -1,0 +1,58 @@
+{
+  "videoPath": "H:\\house\\code\\Vlantines day viral hook\\video\\shot1 v1.mp4",
+  "fps": 24,
+  "totalFrames": 1517,
+  "duration": 63.2,
+  "dimensions": {
+    "width": 416,
+    "height": 752
+  },
+  "greenScreenRegions": [
+    {
+      "index": 0,
+      "startFrame": 0,
+      "endFrame": 500,
+      "position": {
+        "x": 0.2,
+        "y": 0.3,
+        "width": 0.6,
+        "height": 0.4
+      },
+      "fitMode": "cover"
+    },
+    {
+      "index": 1,
+      "startFrame": 501,
+      "endFrame": 1000,
+      "position": {
+        "x": 0.15,
+        "y": 0.25,
+        "width": 0.7,
+        "height": 0.5
+      },
+      "fitMode": "cover"
+    },
+    {
+      "index": 2,
+      "startFrame": 1001,
+      "endFrame": 1517,
+      "position": {
+        "x": 0.1,
+        "y": 0.2,
+        "width": 0.8,
+        "height": 0.6
+      },
+      "fitMode": "cover"
+    }
+  ],
+  "_instructions": {
+    "note": "PLACEHOLDER CONFIG - Please update after analyzing shot1 v1.mp4",
+    "howToAnalyze": "Open shot1 v1.mp4 in a video player and note:",
+    "step1": "Count how many distinct green screen areas appear in the video",
+    "step2": "For each green screen area, note the frame range (use frame counter or time * fps)",
+    "step3": "Estimate position as percentage of frame: x=0 is left, x=1 is right, y=0 is top, y=1 is bottom",
+    "step4": "Width and height are also percentages (0.5 = 50% of video width/height)",
+    "fitModeOptions": ["cover = fill region, crop if needed", "contain = fit inside, may have letterbox", "fill = stretch to fit exactly"],
+    "exampleCalculation": "If green screen appears from 5 seconds to 10 seconds: startFrame = 5 * 24 = 120, endFrame = 10 * 24 = 240"
+  }
+}

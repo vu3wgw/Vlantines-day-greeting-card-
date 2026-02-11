@@ -1,0 +1,41 @@
+.box {
+  backdrop-filter: blur(5px);
+  width: calc(100% - 24px);
+  max-width: 1000px;
+  border-radius: 25px;
+  height: fit-content;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--pane-text);
+}
+
+.boxinner {
+  background: var(--pane-bg);
+  border-radius: 10px;
+}
+
+/*
+* SHARED STYLES
+*/
+
+.headerTopContainer {
+  display: none;
+  padding: 0px 0px;
+  padding-bottom: 12px;
+  align-items: center;
+
+  @media only screen and (min-width: 40em) {
+    display: flex;
+  }
+}
+
+.linkContainer {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+
+  @media only screen and (min-width: 40em) {
+    justify-content: flex-end;
+  }
+}

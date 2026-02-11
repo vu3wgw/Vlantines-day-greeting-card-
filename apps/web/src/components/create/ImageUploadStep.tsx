@@ -183,8 +183,8 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
   };
 
   const handleContinue = async () => {
-    if (images.length < 5) {
-      setError("Please upload at least 5 images");
+    if (images.length < 2) {
+      setError("Please upload at least 2 images");
       return;
     }
 
@@ -301,7 +301,7 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
       <div className="mb-8">
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">Upload Your Photos</h2>
         <p className="text-gray-500">
-          Select 5-10 of your favorite photos together. Drag to reorder them in your video.
+          Select 2-10 of your favorite photos together. Drag to reorder them in your video.
         </p>
       </div>
 
@@ -364,9 +364,9 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
             />
           ))}
         </div>
-        <span className={`text-sm font-medium ${images.length >= 5 ? "text-pink-600" : "text-gray-500"}`}>
+        <span className={`text-sm font-medium ${images.length >= 2 ? "text-pink-600" : "text-gray-500"}`}>
           {images.length}/10 photos
-          {images.length < 5 && <span className="text-gray-400 font-normal"> ({5 - images.length} more needed)</span>}
+          {images.length < 2 && <span className="text-gray-400 font-normal"> ({2 - images.length} more needed)</span>}
         </span>
       </div>
 
@@ -474,7 +474,7 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
       <div className="mt-10 flex justify-end">
         <Button
           onClick={handleContinue}
-          disabled={images.length < 5 || isCreating}
+          disabled={images.length < 2 || isCreating}
           size="lg"
           className="px-8 py-6 text-base rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 shadow-lg shadow-pink-300/30 disabled:opacity-50 disabled:shadow-none"
         >

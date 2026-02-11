@@ -4,17 +4,43 @@ export const ImageDataSchema = z.object({
   url: z.string(),
   caption: z.string(),
   date: z.string().optional(),
+  daysSince: z.number().optional(), // Days since this moment
+  context: z.string().optional(), // Original context from user
+  stickerUrl: z.string().optional(), // Background-removed version
+  isFavorite: z.boolean().optional(),
 });
 
 export type ImageData = z.infer<typeof ImageDataSchema>;
 
 export const ValentineVideoPropsSchema = z.object({
-  images: z.array(ImageDataSchema).min(5).max(10),
+  images: z.array(ImageDataSchema).min(2).max(15),
   coupleName: z.string().optional(),
   seed: z.number().optional(), // Seed for random variations - makes each video unique
 });
 
 export type ValentineVideoProps = z.infer<typeof ValentineVideoPropsSchema>;
+
+// Premium Valentine Story Schema
+export const CoupleInfoSchema = z.object({
+  name1: z.string(),
+  name2: z.string(),
+  startDate: z.string(), // Required - relationship start date
+  relationshipLabel: z.string().optional(),
+});
+
+export type CoupleInfo = z.infer<typeof CoupleInfoSchema>;
+
+export const PremiumVideoPropsSchema = z.object({
+  couple: CoupleInfoSchema,
+  images: z.array(ImageDataSchema).min(2).max(15),
+  colorScheme: z.enum(["warm", "cool", "vibrant", "soft"]).optional(),
+  quality: z.enum(["fast", "balanced", "premium"]).optional(),
+  transitionStyle: z.enum(["smooth", "dynamic", "dramatic"]).optional(),
+  musicUrl: z.string().optional(),
+  seed: z.string().optional(),
+});
+
+export type PremiumVideoProps = z.infer<typeof PremiumVideoPropsSchema>;
 
 // Video configuration constants
 export const VIDEO_CONFIG = {
@@ -44,3 +70,30 @@ export function calculateDuration(imageCount: number): number {
   // Total duration is outro start + outro duration
   return outroStart + outroDurationFrames;
 }
+
+// Green screen region schema for hybrid videos
+export const GreenScreenRegionSchema = z.object({
+  index: z.number().int(),
+  startFrame: z.number().int().min(0),
+  endFrame: z.number().int().min(0),
+  position: z.object({
+    x: z.number().min(0).max(1),
+    y: z.number().min(0).max(1),
+    width: z.number().min(0).max(1),
+    height: z.number().min(0).max(1),
+  }),
+  fitMode: z.enum(["cover", "contain", "fill"]).default("cover"),
+});
+
+export type GreenScreenRegion = z.infer<typeof GreenScreenRegionSchema>;
+
+// Hybrid video props schema (real video + Remotion overlays)
+export const HybridVideoPropsSchema = z.object({
+  compositedVideoUrl: z.string(),
+  images: z.array(ImageDataSchema).min(1).max(15),
+  coupleName: z.string().optional(),
+  overlayStyle: z.enum(["minimal", "romantic", "cinematic"]).default("romantic"),
+  seed: z.number().optional(),
+});
+
+export type HybridVideoProps = z.infer<typeof HybridVideoPropsSchema>;

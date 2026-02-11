@@ -32,7 +32,7 @@ export default function Home() {
             Add notes about each memory and let AI craft the perfect romantic captions.
           </p>
 
-          <Link href="/create">
+          <Link href="/create/upload">
             <Button
               size="lg"
               className="px-8 py-6 text-lg rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 shadow-lg shadow-pink-300/40"

@@ -1,0 +1,53 @@
+/* COMMON BUTTON STYLES */
+
+.button {
+  color: white;
+  height: 48px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  appearance: none;
+  font-size: 16px;
+  border-radius: 5px;
+  text-wrap: nowrap;
+  cursor: pointer;
+  font-family: "Mona Sans";
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  padding: 0 24px;
+}
+
+/* SECODARY BUTTON STYLES */
+
+.secondaryButton {
+  border: 1px solid var(--button-border-color);
+}
+
+/* PRIMARY BUTTON STYLES */
+
+.primaryButton {
+  background-color: rgba(80, 126, 255, 1);
+}
+
+.loginwithgithub {
+  font-family: "Mona Sans";
+  font-weight: bold;
+  appearance: none;
+  cursor: pointer;
+  color: var(--pane-text);
+}
+
+.invalidInput {
+  border: 2px solid red;
+}
+
+.button:disabled {
+  background-color: var(--button-disabled-color);
+  color: var(--disabled-text-color);
+  border-color: var(--unfocused-border-color);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
