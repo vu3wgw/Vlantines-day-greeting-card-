@@ -103,18 +103,23 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
       greenThreshold: slot.greenThreshold,
       redLimit: slot.redLimit,
       blueLimit: slot.blueLimit,
+      caption: sourceImages[i]?.note || "A beautiful memory",
+      date: sourceImages[i]?.date,
     }));
+
+    const name = project?.coupleName || coupleName || undefined;
 
     return {
       videoSrc: GREEN_SCREEN_CONFIG.templateVideoSrc,
       images,
+      coupleName: name,
       // Keep captions for the list below the player
       _captions: sourceImages.map((img) => ({
         caption: img.note || "A beautiful memory",
         date: img.date,
       })),
     };
-  }, [project, localImages]);
+  }, [project, localImages, coupleName]);
 
   if (isLoading || (!project && localImages.length === 0)) {
     return (
@@ -144,6 +149,7 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
   const playerProps = {
     videoSrc: videoProps.videoSrc,
     images: videoProps.images,
+    coupleName: videoProps.coupleName,
   };
 
   return (

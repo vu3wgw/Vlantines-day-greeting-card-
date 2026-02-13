@@ -45,14 +45,20 @@ const defaultProps = {
 // Sample images for GreenScreen studio preview
 const greenScreenDefaultProps = {
   videoSrc: GREEN_SCREEN_CONFIG.templateVideoSrc,
-  images: GREEN_SCREEN_SLOTS.map((slot) => ({
-    imageUrl: defaultProps.images[slot.slotIndex]?.url ?? defaultProps.images[0]!.url,
-    startAtFrame: slot.startAtFrame,
-    endAtFrame: slot.endAtFrame,
-    greenThreshold: slot.greenThreshold,
-    redLimit: slot.redLimit,
-    blueLimit: slot.blueLimit,
-  })),
+  coupleName: defaultProps.coupleName,
+  images: GREEN_SCREEN_SLOTS.map((slot) => {
+    const src = defaultProps.images[slot.slotIndex];
+    return {
+      imageUrl: src?.url ?? defaultProps.images[0]!.url,
+      startAtFrame: slot.startAtFrame,
+      endAtFrame: slot.endAtFrame,
+      greenThreshold: slot.greenThreshold,
+      redLimit: slot.redLimit,
+      blueLimit: slot.blueLimit,
+      caption: src?.caption,
+      date: src?.date,
+    };
+  }),
 };
 
 export const RemotionRoot: React.FC = () => {
