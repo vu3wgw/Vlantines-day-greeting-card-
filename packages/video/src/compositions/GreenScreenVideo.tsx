@@ -188,6 +188,15 @@ export const GreenScreenVideo: React.FC<GreenScreenVideoProps> = ({
     null,
   );
   const [handle] = useState(() => delayRender("Loading green screen images"));
+  // Stable bounding box cache — accumulates the max extent per slot to prevent
+  // frame-to-frame jitter from video compression artifacts at green edges.
+  const bboxCacheRef = useRef<{
+    key: string; // startAtFrame used as slot identity
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  } | null>(null);
 
   // Pre-load all images and extract their pixel data once
   useEffect(() => {
@@ -254,11 +263,11 @@ export const GreenScreenVideo: React.FC<GreenScreenVideoProps> = ({
 
       const { greenThreshold, redLimit, blueLimit } = activeConfig;
 
-      // Pass 1: Find bounding box of all green pixels
-      let minX = width;
-      let maxX = 0;
-      let minY = height;
-      let maxY = 0;
+      // Pass 1: Find bounding box of all green pixels in this frame
+      let fMinX = width;
+      let fMaxX = 0;
+      let fMinY = height;
+      let fMaxY = 0;
       let hasGreen = false;
 
       for (let i = 0; i < len; i += 4) {
@@ -269,10 +278,10 @@ export const GreenScreenVideo: React.FC<GreenScreenVideoProps> = ({
           const idx = i >> 2;
           const px = idx % width;
           const py = (idx - px) / width;
-          if (px < minX) minX = px;
-          if (px > maxX) maxX = px;
-          if (py < minY) minY = py;
-          if (py > maxY) maxY = py;
+          if (px < fMinX) fMinX = px;
+          if (px > fMaxX) fMaxX = px;
+          if (py < fMinY) fMinY = py;
+          if (py > fMaxY) fMaxY = py;
           hasGreen = true;
         }
       }
@@ -282,7 +291,35 @@ export const GreenScreenVideo: React.FC<GreenScreenVideoProps> = ({
         return;
       }
 
-      // Compute "cover" mapping from green bounding box to image
+      // Stabilize bounding box: accumulate max extent per slot so compression
+      // artifacts at green edges don't cause the composited image to jitter.
+      const slotKey = String(activeConfig.startAtFrame);
+      const cached = bboxCacheRef.current;
+      let minX: number;
+      let maxX: number;
+      let minY: number;
+      let maxY: number;
+
+      if (cached && cached.key === slotKey) {
+        // Merge: only ever expand, never shrink
+        minX = Math.min(cached.minX, fMinX);
+        maxX = Math.max(cached.maxX, fMaxX);
+        minY = Math.min(cached.minY, fMinY);
+        maxY = Math.max(cached.maxY, fMaxY);
+        cached.minX = minX;
+        cached.maxX = maxX;
+        cached.minY = minY;
+        cached.maxY = maxY;
+      } else {
+        // New slot — start fresh
+        minX = fMinX;
+        maxX = fMaxX;
+        minY = fMinY;
+        maxY = fMaxY;
+        bboxCacheRef.current = { key: slotKey, minX, maxX, minY, maxY };
+      }
+
+      // Compute "cover" mapping from stabilized bounding box to image
       const greenW = maxX - minX + 1;
       const greenH = maxY - minY + 1;
       const greenAR = greenW / greenH;
