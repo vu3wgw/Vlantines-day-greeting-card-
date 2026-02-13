@@ -1,6 +1,8 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Img,
+  staticFile,
   useCurrentFrame,
   interpolate,
   Easing,
@@ -146,24 +148,43 @@ export const IntroSlide: React.FC<IntroSlideProps> = ({ coupleName, seed = 0 }) 
           }}
         />
 
-        {/* Couple name */}
+        {/* Couple name with badge background */}
         {coupleName && (
-          <p
+          <div
             style={{
-              fontFamily: "'Playfair Display', 'Georgia', serif",
-              fontSize: 42,
-              fontStyle: "italic",
-              fontWeight: 500,
-              color: "rgba(255, 200, 210, 0.95)",
-              textAlign: "center",
-              margin: 0,
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               opacity: nameOpacity,
               transform: `scale(${nameScale})`,
-              textShadow: "1px 1px 15px rgba(0,0,0,0.4)",
             }}
           >
-            {coupleName}
-          </p>
+            <Img
+              src={staticFile("valentine-badge.png")}
+              style={{
+                position: "absolute",
+                width: 500,
+                height: "auto",
+              }}
+            />
+            <p
+              style={{
+                fontFamily: "'Playfair Display', 'Georgia', serif",
+                fontSize: 42,
+                fontStyle: "italic",
+                fontWeight: 500,
+                color: "#8b2252",
+                textAlign: "center",
+                margin: 0,
+                position: "relative",
+                zIndex: 1,
+                textShadow: "none",
+              }}
+            >
+              {coupleName}
+            </p>
+          </div>
         )}
 
         {/* Subtitle */}

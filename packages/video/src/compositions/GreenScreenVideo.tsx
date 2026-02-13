@@ -5,14 +5,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   AbsoluteFill,
+  continueRender,
+  delayRender,
+  Img,
+  interpolate,
   OffthreadVideo,
   Sequence,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
-  staticFile,
-  interpolate,
-  delayRender,
-  continueRender,
 } from "remotion";
 import { z } from "zod";
 
@@ -46,8 +47,47 @@ type LoadedImage = {
  * in addition to local public/ file names resolved via staticFile().
  */
 function resolveAssetUrl(url: string): string {
-  if (url.startsWith("data:") || url.startsWith("blob:") || url.startsWith("http")) return url;
+  if (
+    url.startsWith("data:") ||
+    url.startsWith("blob:") ||
+    url.startsWith("http")
+  )
+    return url;
   return staticFile(url);
+}
+
+/**
+ * Parse a user-entered date string into a Date object.
+ * Handles: "March 15, 2023", "March 2023", "2023", etc.
+ * Returns null if unparseable.
+ */
+function parseMemoryDate(dateStr: string): Date | null {
+  if (!dateStr) return null;
+  // Try native parse first (handles "March 15, 2023" and "2023" well)
+  const parsed = new Date(dateStr);
+  if (!isNaN(parsed.getTime())) return parsed;
+  // "Month Year" e.g. "March 2023" — native handles this on most engines,
+  // but fall back to manual parse
+  const monthYear = dateStr.match(
+    /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})$/i,
+  );
+  if (monthYear) {
+    const d = new Date(`${monthYear[1]} 1, ${monthYear[2]}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
+function formatDaysAgo(dateStr: string): string | null {
+  const date = parseMemoryDate(dateStr);
+  if (!date) return null;
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  if (diffMs < 0) return null; // future date
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (days === 0) return "today";
+  if (days === 1) return "1 day ago";
+  return `${days.toLocaleString()} days ago`;
 }
 
 /** Caption overlay shown during each image slot */
@@ -57,6 +97,8 @@ const CaptionOverlay: React.FC<{ caption?: string; date?: string }> = ({
 }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
+
+  const daysAgo = date ? formatDaysAgo(date) : null;
 
   if (!caption && !date) return null;
 
@@ -80,8 +122,8 @@ const CaptionOverlay: React.FC<{ caption?: string; date?: string }> = ({
   return (
     <AbsoluteFill
       style={{
-        justifyContent: "flex-end",
-        padding: "0 12px 16px",
+        justifyContent: "flex-start",
+        padding: "16px 12px 0",
         opacity,
       }}
     >
@@ -89,11 +131,11 @@ const CaptionOverlay: React.FC<{ caption?: string; date?: string }> = ({
         style={{
           maxWidth: "100%",
           width: "100%",
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, transparent 100%)",
-          padding: "28px 14px 14px",
+          // background:
+          // "linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, transparent 100%)",
+          padding: "14px 14px 28px",
           borderRadius: 6,
-          transform: `translateY(${slideY}px)`,
+          transform: `translateY(${slideY * -1}px)`,
         }}
       >
         {date && (
@@ -127,6 +169,22 @@ const CaptionOverlay: React.FC<{ caption?: string; date?: string }> = ({
             {caption}
           </p>
         )}
+        {daysAgo && (
+          <p
+            style={{
+              fontFamily: "'Inter', 'Helvetica', sans-serif",
+              fontSize: 11,
+              fontWeight: 400,
+              fontStyle: "italic",
+              color: "rgba(255,180,200,0.75)",
+              textAlign: "center",
+              margin: "6px 0 0",
+              letterSpacing: "0.03em",
+            }}
+          >
+            {daysAgo}
+          </p>
+        )}
       </div>
     </AbsoluteFill>
   );
@@ -140,7 +198,7 @@ const CoupleNameOutro: React.FC<{ coupleName: string }> = ({ coupleName }) => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const scale = interpolate(frame, [0, 30], [0.9, 1], {
+  const scale = interpolate(frame, [0, 30], [0.9, 1.4], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -150,27 +208,47 @@ const CoupleNameOutro: React.FC<{ coupleName: string }> = ({ coupleName }) => {
       style={{
         justifyContent: "flex-end",
         alignItems: "center",
-        paddingBottom: 40,
+        paddingBottom: 120,
         opacity,
       }}
     >
-      <p
+      <div
         style={{
-          fontFamily: "'Playfair Display', 'Georgia', serif",
-          maxWidth: "100%",
-          fontSize: 26,
-          fontStyle: "italic",
-          fontWeight: 600,
-          color: "rgba(255,220,230,0.95)",
-          textAlign: "center",
-          margin: 0,
-          padding: "0 14px",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           transform: `scale(${scale})`,
-          textShadow: "1px 1px 8px rgba(0,0,0,0.7)",
         }}
       >
-        ~ {coupleName} ~
-      </p>
+        <Img
+          src={staticFile("valentine-frame-2.png")}
+          style={{
+            position: "absolute",
+            width: 800,
+            height: "auto",
+          }}
+        />
+        <p
+          style={{
+            fontFamily: "'Playfair Display', 'Georgia', serif",
+            maxWidth: "100%",
+            // width: "100%",
+            fontSize: 26,
+            fontStyle: "italic",
+            fontWeight: 600,
+            color: "#8b2252",
+            textAlign: "center",
+            margin: 0,
+            padding: "0 14px",
+            transform: `scale(${scale * 0.4})`,
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          {coupleName}
+        </p>
+      </div>
     </AbsoluteFill>
   );
 };
@@ -381,9 +459,8 @@ export const GreenScreenVideo: React.FC<GreenScreenVideoProps> = ({
   );
 
   // Last slot's endAtFrame — couple name shows after this
-  const lastSlotEnd = images.length > 0
-    ? Math.max(...images.map((img) => img.endAtFrame))
-    : 0;
+  const lastSlotEnd =
+    images.length > 0 ? Math.max(...images.map((img) => img.endAtFrame)) : 0;
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
@@ -400,7 +477,7 @@ export const GreenScreenVideo: React.FC<GreenScreenVideoProps> = ({
 
       {/* Caption overlays — one per image slot */}
       {images.map((img, i) =>
-        (img.caption || img.date) ? (
+        img.caption || img.date ? (
           <Sequence
             key={i}
             from={img.startAtFrame}
@@ -414,10 +491,7 @@ export const GreenScreenVideo: React.FC<GreenScreenVideoProps> = ({
 
       {/* Couple name at the end of the video */}
       {coupleName && lastSlotEnd > 0 && (
-        <Sequence
-          from={lastSlotEnd}
-          name="Couple Name"
-        >
+        <Sequence from={lastSlotEnd} name="Couple Name">
           <CoupleNameOutro coupleName={coupleName} />
         </Sequence>
       )}
