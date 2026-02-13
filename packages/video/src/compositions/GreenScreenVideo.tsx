@@ -123,68 +123,87 @@ const CaptionOverlay: React.FC<{ caption?: string; date?: string }> = ({
     <AbsoluteFill
       style={{
         justifyContent: "flex-start",
-        padding: "16px 12px 0",
+        alignItems: "center",
+        padding: "10px 12px 0",
         opacity,
       }}
     >
       <div
         style={{
-          maxWidth: "100%",
-          width: "100%",
-          // background:
-          // "linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, transparent 100%)",
-          padding: "14px 14px 28px",
-          borderRadius: 6,
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           transform: `translateY(${slideY * -1}px)`,
+          minWidth: 300,
         }}
       >
-        {date && (
-          <p
-            style={{
-              fontFamily: "'Inter', 'Helvetica', sans-serif",
-              fontSize: 14,
-              fontWeight: 500,
-              color: "rgba(255,200,210,0.9)",
-              textAlign: "center",
-              margin: "0 0 6px",
-              letterSpacing: "0.05em",
-            }}
-          >
-            {date}
-          </p>
-        )}
-        {caption && (
-          <p
-            style={{
-              fontFamily: "'Playfair Display', 'Georgia', serif",
-              fontSize: 18,
-              fontWeight: 600,
-              color: "white",
-              textAlign: "center",
-              lineHeight: 1.4,
-              margin: 0,
-              textShadow: "1px 1px 4px rgba(0,0,0,0.8)",
-            }}
-          >
-            {caption}
-          </p>
-        )}
-        {daysAgo && (
-          <p
-            style={{
-              fontFamily: "'Inter', 'Helvetica', sans-serif",
-              fontSize: 11,
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: "rgba(255,180,200,0.75)",
-              textAlign: "center",
-              margin: "6px 0 0",
-              letterSpacing: "0.03em",
-            }}
-          >
-            {daysAgo}
-          </p>
-        )}
+        <Img
+          src={staticFile("valentine-frame.png")}
+          style={{
+            position: "absolute",
+            width: 380,
+            scale: 1.15,
+            height: "auto",
+          }}
+        />
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "18px 40px 10px",
+          }}
+        >
+          {caption && (
+            <p
+              style={{
+                fontFamily: "'Playfair Display', 'Georgia', serif",
+                fontSize: 16,
+                fontWeight: 600,
+                color: "#6b1a3a",
+                textAlign: "center",
+                lineHeight: 1.3,
+                margin: 0,
+              }}
+            >
+              {caption}
+            </p>
+          )}
+          {date && (
+            <p
+              style={{
+                fontFamily: "'Inter', 'Helvetica', sans-serif",
+                fontSize: 11,
+                fontWeight: 500,
+                color: "#9e4b6e",
+                textAlign: "center",
+                margin: "4px 0 0",
+                letterSpacing: "0.04em",
+              }}
+            >
+              {date}
+            </p>
+          )}
+          {daysAgo && (
+            <p
+              style={{
+                fontFamily: "'Inter', 'Helvetica', sans-serif",
+                fontSize: 10,
+                fontWeight: 400,
+                fontStyle: "italic",
+                color: "#b06b8a",
+                textAlign: "center",
+                margin: "2px 0 0",
+                letterSpacing: "0.03em",
+              }}
+            >
+              {daysAgo}
+            </p>
+          )}
+        </div>
       </div>
     </AbsoluteFill>
   );
