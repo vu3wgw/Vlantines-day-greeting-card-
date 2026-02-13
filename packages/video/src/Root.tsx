@@ -1,6 +1,8 @@
 import React from "react";
 import { Composition } from "remotion";
 import { ValentineVideo } from "./compositions/ValentineVideo";
+import { GreenScreenVideo, greenScreenVideoSchema } from "./compositions/GreenScreenVideo";
+import { GREEN_SCREEN_SLOTS, GREEN_SCREEN_CONFIG } from "./compositions/greenScreenConstants";
 import {
   VIDEO_CONFIG,
   ValentineVideoPropsSchema,
@@ -40,9 +42,34 @@ const defaultProps = {
   seed: 12345, // Fixed seed for consistent preview
 };
 
+// Sample images for GreenScreen studio preview
+const greenScreenDefaultProps = {
+  videoSrc: GREEN_SCREEN_CONFIG.templateVideoSrc,
+  images: GREEN_SCREEN_SLOTS.map((slot) => ({
+    imageUrl: defaultProps.images[slot.slotIndex]?.url ?? defaultProps.images[0]!.url,
+    startAtFrame: slot.startAtFrame,
+    endAtFrame: slot.endAtFrame,
+    greenThreshold: slot.greenThreshold,
+    redLimit: slot.redLimit,
+    blueLimit: slot.blueLimit,
+  })),
+};
+
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* Green screen composition */}
+      <Composition
+        id="GreenScreen"
+        component={GreenScreenVideo}
+        durationInFrames={GREEN_SCREEN_CONFIG.durationInFrames}
+        fps={GREEN_SCREEN_CONFIG.fps}
+        width={GREEN_SCREEN_CONFIG.width}
+        height={GREEN_SCREEN_CONFIG.height}
+        schema={greenScreenVideoSchema}
+        defaultProps={greenScreenDefaultProps}
+      />
+
       {/* Main composition */}
       <Composition
         id="ValentineVideo"

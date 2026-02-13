@@ -86,7 +86,7 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       setError(null);
-      const remainingSlots = 10 - images.length;
+      const remainingSlots = 5 - images.length;
       const newFiles = acceptedFiles.slice(0, remainingSlots);
 
       const newImages = newFiles.map((file) => ({
@@ -105,9 +105,9 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
     accept: {
       "image/*": [".jpg", ".jpeg", ".png", ".webp", ".heic"],
     },
-    maxFiles: 10,
+    maxFiles: 5,
     maxSize: 10 * 1024 * 1024,
-    noClick: images.length >= 10,
+    noClick: images.length >= 5,
   });
 
   const removeImage = (index: number) => {
@@ -301,7 +301,7 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
       <div className="mb-8">
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">Upload Your Photos</h2>
         <p className="text-gray-500">
-          Select 5-10 of your favorite photos together. Drag to reorder them in your video.
+          Select 5 of your favorite photos together. Drag to reorder them in your video.
         </p>
       </div>
 
@@ -353,7 +353,7 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
       {/* Progress indicator */}
       <div className="mt-6 flex items-center justify-center gap-3">
         <div className="flex -space-x-1">
-          {[...Array(10)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <div
               key={i}
               className={`w-3 h-3 rounded-full border-2 border-white transition-colors ${
@@ -365,7 +365,7 @@ export function ImageUploadStep({ onComplete }: ImageUploadStepProps) {
           ))}
         </div>
         <span className={`text-sm font-medium ${images.length >= 5 ? "text-pink-600" : "text-gray-500"}`}>
-          {images.length}/10 photos
+          {images.length}/5 photos
           {images.length < 5 && <span className="text-gray-400 font-normal"> ({5 - images.length} more needed)</span>}
         </span>
       </div>

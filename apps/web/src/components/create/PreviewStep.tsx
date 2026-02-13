@@ -2,7 +2,11 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Player } from "@remotion/player";
-import { ValentineVideo, VIDEO_CONFIG, calculateDuration } from "@my-better-t-app/video";
+import {
+  GreenScreenVideo,
+  GREEN_SCREEN_SLOTS,
+  GREEN_SCREEN_CONFIG,
+} from "@my-better-t-app/video";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, Loader2, Play, Info, Heart } from "lucide-react";
@@ -67,35 +71,50 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
   }, [project]);
 
   const videoProps = useMemo(() => {
+    // CLOUD RENDERING: For server-side rendering, image URLs will be full https:// URLs
+    // from cloud storage. The GreenScreenVideo component's resolveAssetUrl handles both
+    // local staticFile paths and full URLs. The composition ID is "GreenScreen" and props
+    // follow the greenScreenVideoSchema: { videoSrc, images: [{imageUrl, startAtFrame, ...}] }
+    let sourceImages: { preview: string; note: string; date: string }[] = [];
+
     if (project?.images) {
-      // Convex mode
-      const images = project.images
+      sourceImages = project.images
         .sort((a: any, b: any) => a.order - b.order)
         .map((img: any) => ({
-          url: img.url || "",
-          caption: img.enhancedCaption || img.originalNote,
+          preview: img.url || "",
+          note: img.enhancedCaption || img.originalNote,
           date: img.imageDate,
         }));
-
-      return {
-        images,
-        coupleName: project.coupleName,
-      };
     } else if (localImages.length > 0) {
-      // Mock mode - use sessionStorage data
-      const images = localImages.map((img) => ({
-        url: img.preview,
-        caption: img.enhancedNote || img.note,
+      sourceImages = localImages.map((img) => ({
+        preview: img.preview,
+        note: img.enhancedNote || img.note,
         date: img.date,
       }));
-
-      return {
-        images,
-        coupleName: coupleName || "Our Love Story",
-      };
     }
-    return null;
-  }, [project, localImages, coupleName]);
+
+    if (sourceImages.length === 0) return null;
+
+    // Map each user image to its green screen slot
+    const images = GREEN_SCREEN_SLOTS.map((slot, i) => ({
+      imageUrl: sourceImages[i]?.preview ?? sourceImages[0].preview,
+      startAtFrame: slot.startAtFrame,
+      endAtFrame: slot.endAtFrame,
+      greenThreshold: slot.greenThreshold,
+      redLimit: slot.redLimit,
+      blueLimit: slot.blueLimit,
+    }));
+
+    return {
+      videoSrc: GREEN_SCREEN_CONFIG.templateVideoSrc,
+      images,
+      // Keep captions for the list below the player
+      _captions: sourceImages.map((img) => ({
+        caption: img.note || "A beautiful memory",
+        date: img.date,
+      })),
+    };
+  }, [project, localImages]);
 
   if (isLoading || (!project && localImages.length === 0)) {
     return (
@@ -118,8 +137,14 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
     );
   }
 
-  const durationInFrames = calculateDuration(videoProps.images.length);
-  const durationSeconds = Math.round(durationInFrames / VIDEO_CONFIG.fps);
+  const durationInFrames = GREEN_SCREEN_CONFIG.durationInFrames;
+  const durationSeconds = Math.round(durationInFrames / GREEN_SCREEN_CONFIG.fps);
+
+  // Props for the Player (exclude internal _captions)
+  const playerProps = {
+    videoSrc: videoProps.videoSrc,
+    images: videoProps.images,
+  };
 
   return (
     <Card className="p-6">
@@ -143,19 +168,19 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
         <span>•</span>
         <span>~{durationSeconds} seconds</span>
         <span>•</span>
-        <span>1080x1920 (9:16)</span>
+        <span>{GREEN_SCREEN_CONFIG.width}x{GREEN_SCREEN_CONFIG.height}</span>
       </div>
 
       {/* Remotion Player */}
       <div className="flex justify-center bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden p-4">
         <div className="w-full max-w-[400px] aspect-[9/16] rounded-xl overflow-hidden shadow-2xl">
           <Player
-            component={ValentineVideo}
-            inputProps={videoProps}
+            component={GreenScreenVideo}
+            inputProps={playerProps}
             durationInFrames={durationInFrames}
-            fps={VIDEO_CONFIG.fps}
-            compositionWidth={VIDEO_CONFIG.width}
-            compositionHeight={VIDEO_CONFIG.height}
+            fps={GREEN_SCREEN_CONFIG.fps}
+            compositionWidth={GREEN_SCREEN_CONFIG.width}
+            compositionHeight={GREEN_SCREEN_CONFIG.height}
             style={{
               width: "100%",
               height: "100%",
@@ -172,7 +197,7 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
       <div className="mt-6">
         <h3 className="text-sm font-medium mb-3 text-gray-700">Captions in this video:</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {videoProps.images.map((img: any, index: number) => (
+          {videoProps._captions.map((item: any, index: number) => (
             <div
               key={index}
               className="text-sm p-3 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border border-pink-100 flex items-start gap-2"
@@ -180,7 +205,7 @@ export function PreviewStep({ projectId, onComplete, onBack }: PreviewStepProps)
               <span className="bg-gradient-to-r from-pink-500 to-rose-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium shrink-0">
                 {index + 1}
               </span>
-              <span className="line-clamp-2 text-gray-700">{img.caption}</span>
+              <span className="line-clamp-2 text-gray-700">{item.caption}</span>
             </div>
           ))}
         </div>

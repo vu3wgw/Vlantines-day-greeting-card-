@@ -84,6 +84,14 @@ export function RenderStep({ projectId }: RenderStepProps) {
     }
   };
 
+  // CLOUD RENDERING: For server-side rendering, use composition ID "GreenScreen"
+  // with props matching greenScreenVideoSchema:
+  //   { videoSrc: "<cdn-url>/valentine-template.mp4",
+  //     images: [{ imageUrl: "<cdn-url>/photo.jpg", startAtFrame, endAtFrame,
+  //                greenThreshold, redLimit, blueLimit }] }
+  // Image URLs should be full https:// URLs accessible by the render worker.
+  // Template video should also be a full URL (not staticFile path).
+
   // Local render using API
   const handleLocalRender = async () => {
     setStatus("rendering");
